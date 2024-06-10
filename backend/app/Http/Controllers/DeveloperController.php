@@ -17,7 +17,8 @@ class DeveloperController extends Controller
 
     public function index()
     {
-        dd('Hora do show');
+        $result = $this->developerService->getAllDevelopers();
+        return response()->json($result['data'] ?? ['message' => $result['message']], $result['status']);
     }
 
     public function store(DeveloperRequest $request)
@@ -28,16 +29,21 @@ class DeveloperController extends Controller
 
     public function show(string $id)
     {
-        //
+        {
+            $result = $this->developerService->findById($id);
+            return response()->json($result['data'] ?? ['message' => $result['message']], $result['status']);
+        }
     }
 
-    public function update(Request $request, string $id)
+    public function update(DeveloperRequest $request, string $id)
     {
-        //
+        $result = $this->developerService->update($id, $request->only(['nivel_id', 'nome', 'sexo', 'data_nascimento', 'idade', 'hobby']));
+        return response()->json($result['data'] ?? ['message' => $result['message']], $result['status']);
     }
 
     public function destroy(string $id)
     {
-        //
+        $result = $this->developerService->delete($id);
+        return response()->json(['message' => $result['message']], $result['status']);
     }
 }
