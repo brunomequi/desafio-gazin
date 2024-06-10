@@ -6,8 +6,4 @@ use Illuminate\Support\Facades\Route;
 
 Route::apiResource('niveis', LevelController::class);
 Route::apiResource('desenvolvedores', DeveloperController::class);
-Route::get('niveis/{id}', [LevelController::class, 'show']);
-Route::resource('levels', LevelController::class);
-Route::resource('levels', LevelController::class);
-Route::resource('levels', LevelController::class);
-Route::resource('developers', DeveloperController::class);
+

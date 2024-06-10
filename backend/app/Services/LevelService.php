@@ -3,86 +3,40 @@
 namespace App\Services;
 
 use App\Models\Level;
-use Exception;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class LevelService
 {
-    public function create(array $data)
+    public function __construct(private Level $levelModel) {}
+
+    public function create(array $data): Level
     {
-        try {
-            return [
-                'status' => 201,
-                'data' => Level::create($data)
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 400,
-                'message' => $e->getMessage()
-            ];
-        }
-    }
-    public function findById($id)
-    {
-        try {
-            $level = Level::findOrFail($id);
-            return [
-                'status' => 200,
-                'data' => $level
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 404,
-                'message' => 'Level not found'
-            ];
-        }
+        return $this->levelModel->create($data);
     }
 
-    public function getAllLevels()
+    public function findById(int $id): Level
     {
-        try {
-            $levels = Level::all();
-            return [
-                'status' => 200,
-                'data' => $levels
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 500,
-                'message' => 'Error fetching levels'
-            ];
-        }
+        return $this->levelModel->findOrFail($id);
     }
-    public function update($id, array $data)
+
+    public function getAllLevels(): LengthAwarePaginator
     {
-        try {
-            $level = Level::findOrFail($id);
-            $level->update($data);
-            return [
-                'status' => 200,
-                'data' => $level
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 400,
-                'message' => $e->getMessage()
-            ];
-        }
+        $levels = $this->levelModel->paginate(10);
+        throw_unless($levels->total() > 0,'Não existem níveis cadastrados');
+        return $levels;
     }
-    public function delete($id)
+
+    public function update(int $id, array $data): Level
     {
-        try {
-            $level = Level::findOrFail($id);
-            $level->delete();
-            return [
-                'status' => 200,
-                'message' => 'Level deleted successfully'
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 400,
-                'message' => 'Há desenvolvedores atrelados ao nível'
-            ];
-        }
+        $level = $this->levelModel->findOrFail($id);
+        $level->update($data);
+        return $level;
+    }
+
+    public function delete(int $id): int
+    {
+        $level = $this->levelModel->findOrFail($id);
+        throw_if($level->developers()->count() > 0,'Existem desenvolvedores');
+        return $level->delete();
     }
 }
-

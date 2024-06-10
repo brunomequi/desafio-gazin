@@ -2,8 +2,6 @@
 
 namespace App\Providers;
 
-use App\Services\LevelService;
-use App\Services\DeveloperService;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -15,12 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(LevelService::class, function ($app) {
-            return new LevelService();
-        });
-        $this->app->singleton(DeveloperService::class, function ($app) {
-            return new DeveloperService();
-        });
+
     }
 
     /**

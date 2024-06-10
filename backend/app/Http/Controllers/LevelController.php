@@ -3,46 +3,108 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\LevelRequest;
-use App\Models\Level;
+use App\Http\Resources\LevelResource;
 use App\Services\LevelService;
-use Illuminate\Http\Request;
+use Exception;
+use Illuminate\Http\JsonResponse;
 
 class LevelController extends Controller
 {
-    protected $levelService;
 
-    public function __construct(LevelService $levelService)
+    public function __construct(private LevelService $levelService)
+    {}
+
+    public function index(): JsonResponse
     {
-        $this->levelService = $levelService;
+
+        try {
+            $levels = $this->levelService->getAllLevels();
+            $result = [
+             'data' => LevelResource::collection($levels),
+             'meta' => [
+                 'total' => $levels->total(),
+                 'per_page' => $levels->perPage(),
+                 'current_page' => $levels->currentPage(),
+                 'last_page' => $levels->lastPage(),
+              ]
+            ];
+
+            $status = 200;
+        } catch (Exception $e) {
+            $result = [
+                'message' => $e->getMessage()
+            ];
+
+            $status = 404;
+        }
+
+        return response()->json($result, $status);
     }
 
-    public function index()
+    public function store(LevelRequest $request): JsonResponse
     {
-        $result = $this->levelService->getAllLevels();
-        return response()->json($result['data'] ?? ['message' => $result['message']], $result['status']);
+        try {
+            $result = $this->levelService->create($request->only(['nivel']));
+            $status = 201;
+        } catch (Exception $e) {
+            $result = [
+                'message' => $e->getMessage()
+            ];
+
+            $status = 400;
+        }
+
+        return response()->json($result, $status);
     }
 
-    public function store(LevelRequest $request)
+    public function show(int $id): JsonResponse
     {
-        $result = $this->levelService->create($request->only(['nivel']));
-        return response()->json($result['data'] ?? ['message' => $result['message']], $result['status']);
+        try {
+            $result = $this->levelService->findById($id);
+            $status = 200;
+        } catch (Exception $e) {
+            $result = [
+                'message' => $e->getMessage()
+            ];
+
+            $status = 400;
+        }
+
+        return response()->json($result, $status);
     }
 
-    public function show(string $id)
+    public function update(LevelRequest $request, string $id): JsonResponse
     {
-        $result = $this->levelService->findById($id);
-        return response()->json($result['data'] ?? ['message' => $result['message']], $result['status']);
+        try {
+            $result = $this->levelService->update($id, $request->only(['nivel']));
+            $status = 200;
+        } catch (Exception $e) {
+            $result = [
+                'message' => $e->getMessage()
+            ];
+
+            $status = 400;
+        }
+
+        return response()->json($result, $status);
     }
 
-    public function update(LevelRequest $request, string $id)
+    public function destroy(int $id): JsonResponse
     {
-        $result = $this->levelService->update($id, $request->only(['nivel']));
-        return response()->json($result['data'] ?? ['message' => $result['message']], $result['status']);
-    }
+        try {
+            $this->levelService->delete($id);
+            $result = [
+                'message' => 'Level removido com sucesso'
+            ];
+            $status = 204;
+        } catch (Exception $e) {
+            $result = [
+                'message' => $e->getMessage()
+            ];
 
-    public function destroy(string $id)
-    {
-        $result = $this->levelService->delete($id);
-        return response()->json(['message' => $result['message']], $result['status']);
+            $status = 400;
+        }
+
+        return response()->json($result, $status);
     }
 }
