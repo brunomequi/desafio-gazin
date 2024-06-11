@@ -3,89 +3,50 @@
 namespace App\Services;
 
 use App\Models\Developer;
-use Exception;
+use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 class DeveloperService
 {
-    public function create(array $data)
+    public function __construct(private Developer $developerModel) {}
+
+    public function create(array $data): Developer
     {
-        try {
-            $developer = Developer::create($data);
-            return [
-                'status' => 201,
-                'data' => $developer
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 400,
-                'message' => $e->getMessage()
-            ];
-        }
+        $data['idade'] = $this->getAge($data['data_nascimento']);
+        return $this->developerModel->create($data);
     }
 
-    public function findById($id)
+    public function findById(int $id): Developer
     {
-        try {
-            $developer = Developer::findOrFail($id);
-            return [
-                'status' => 200,
-                'data' => $developer
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 404,
-                'message' => 'Developer not found'
-            ];
-        }
+        return $this->developerModel->findOrFail($id);
     }
 
-    public function getAllDevelopers()
+    public function getAllDevelopers(): LengthAwarePaginator
     {
-        try {
-            $developers = Developer::all();
-            return [
-                'status' => 200,
-                'data' => $developers
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 500,
-                'message' => 'Error fetching developers'
-            ];
-        }
+        $developers = $this->developerModel->paginate(10);
+        throw_unless($developers->total() > 0,'Não existem desenvolvedores cadastrados');
+        return $developers;
     }
 
-    public function update($id, array $data)
+    public function update(int $id, array $data): Developer
     {
-        try {
-            $developer = Developer::findOrFail($id);
-            $developer->update($data);
-            return [
-                'status' => 200,
-                'data' => $developer
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 400,
-                'message' => $e->getMessage()
-            ];
-        }
+        $developer = $this->developerModel->findOrFail($id);
+        $data['idade'] = $this->getAge($data['data_nascimento']);
+        $developer->update($data);
+        return $developer;
     }
 
-    public function delete($id)
+    public function delete(int $id): int
     {
-        try {
-            $developer = Developer::findOrFail($id);
-            $developer->delete();
-            return [
-                'status' => 200,
-                'message' => 'Developer deleted successfully'
-            ];
-        } catch (Exception $e) {
-            return [
-                'status' => 400,
-                'message' => $e->getMessage()
-            ];
-        }
+        $developer = $this->developerModel->findOrFail($id);
+        return $developer->delete();
+    }
+
+
+    private function getAge(string $birthDate): int
+    {
+        $birthDate = Carbon::parse($birthDate);
+        return $birthDate->age;
+
     }
 }
