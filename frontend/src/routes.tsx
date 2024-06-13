@@ -20,11 +20,19 @@ export const router = createBrowserRouter([
         element: <LevelForm />,
       },
       {
+        path: '/levels/edit/:id',
+        element: <LevelForm />,
+      },
+      {
         path: '/developers',
         element: <DevelopersPage />,
       },
       {
         path: '/developers/create',
+        element: <DevelopersForm />,
+      },
+      {
+        path: '/developers/edit/:id',
         element: <DevelopersForm />,
       },
     ],

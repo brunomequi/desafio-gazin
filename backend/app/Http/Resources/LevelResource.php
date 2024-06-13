@@ -13,6 +13,7 @@ class LevelResource extends JsonResource
         return [
             'id' => $this->id,
             'nivel' => $this->nivel,
+            'developers_count' => $this->developers->count(),
         ];
     }
 }
