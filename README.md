@@ -39,7 +39,7 @@ $ npm run dev
 
 As seguintes tecnologias foram utilizadas na aplicação:
 
-- [Laravel 11.9](https://laravel.com/docs/11.x/installation)
-- [React 18.2](https://react.dev/)
-- [Vite 5.2](https://vitejs.dev/)
+- [Backend: Laravel 11.9](https://laravel.com/docs/11.x/installation)
+- [Frontend: React 18.2](https://react.dev/)
+- [Frontend: Vite 5.2](https://vitejs.dev/)
 - [Docker](https://www.docker.com/)
