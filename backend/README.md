@@ -5,7 +5,7 @@
 $ docker-compose up -d --build
 
 # Acesse o container
-$ docker exec -it challengegazin-app-1 bash
+$ docker exec -it desafio_gazin_app bash
 
 #Dentro do container utilize os comandos abaixo:
 

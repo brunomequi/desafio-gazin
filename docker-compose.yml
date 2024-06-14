@@ -2,6 +2,7 @@ version: '3.9'
 
 services:
     app:
+        container_name: desafio_gazin_app
         build:
             context: ./backend
             dockerfile: Dockerfile
